@@ -1,0 +1,33 @@
+{
+  "entry": {
+    "details": [
+      "src/main/js/pages/details/entry.js"
+    ],
+    "details-style": [
+      "src/main/style/details.scss"
+    ],
+    "article": [
+      "src/main/js/pages/article/entry.js"
+    ],
+    "article-style": [
+      "src/main/style/article.scss"
+    ],
+    "global-style": [
+      "src/main/style/pages/common/global.scss"
+    ],
+    "global-js": [
+      "src/main/js/common/global.js"
+    ]
+  },
+  "output": {
+    "path": "./target/classes/dist"
+  },
+  "devServer": {
+    "liveReload": false,
+    "hot": true
+  },
+  "ssr": true,
+  "externals": {
+    "bootstrap.css": "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  }
+}

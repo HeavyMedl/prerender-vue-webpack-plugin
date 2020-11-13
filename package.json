@@ -1,0 +1,39 @@
+{
+  "name": "prerender-vue-webpack-plugin",
+  "version": "1.0.0",
+  "description": "A webpack plugin that allows you to pre-render your Vue applications and optionally inline critical CSS at build time without a headless browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "build": "echo \"Error: no build specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HeavyMedl/prerender-vue-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "prerender",
+    "pre-render",
+    "vue",
+    "inline",
+    "css",
+    "critical",
+    "critters",
+    "bundle",
+    "renderer"
+  ],
+  "bugs": {
+    "url": "https://github.com/HeavyMedl/prerender-vue-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/HeavyMedl/prerender-vue-webpack-plugin#readme",
+  "author": "kmedley",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "critters-webpack-plugin": "^2.5.0",
+    "vue-server-renderer": "^2.6.12",
+    "webpack-log": "^3.0.1"
+  }
+}
