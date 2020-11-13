@@ -33,7 +33,9 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "critters-webpack-plugin": "^2.5.0",
-    "vue-server-renderer": "^2.6.12",
     "webpack-log": "^3.0.1"
+  },
+  "peerDependencies": {
+    "vue-server-renderer": ">=2.x"
   }
 }
