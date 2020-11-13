@@ -6,20 +6,24 @@ A Webpack plugin that allows you to prerender your Vue applications and optional
 
 ## Installation
 
-Bring it into your project
+As mentioned, this plugin depends on `vue-server-renderer@>=2.x` to work. That package is defined as a peer dependency of this plugin, meaning you'll need to install it separately before using this plugin.
+
+```sh
+$ npm i -D vue-server-renderer
+```
+
+Next, bring the plugin into your project
 
 ```sh
 $ npm i -D prerender-vue-webpack-plugin
 ```
 
-Now, import the plugin into your Webpack configuration and add it to your plugins. Additionally, if you aren't already using `VueSSRServerPlugin`, add it to your plugins.
+Finally, import VueSSRServerPlugin and the plugin into your Webpack configuration and add it to your array of plugins.
 
 ```diff
 // webpack.config.js
-+const {
-+  PrerenderVueWebpackPlugin,
-+  VueSSRServerPlugin
-+ } = require('prerender-vue-webpack-plugin');
++const VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
++const PrerenderVueWebpackPlugin = require('prerender-vue-webpack-plugin');
 
 module.exports = {
   plugins: [

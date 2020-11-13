@@ -1,6 +1,5 @@
 const fsPromises = require('fs').promises;
 const path = require('path');
-const VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
 const { createBundleRenderer } = require('vue-server-renderer');
 const cheerio = require('cheerio');
 const Critters = require('critters-webpack-plugin');
@@ -428,7 +427,4 @@ class PrerenderVueWebpackPlugin {
   }
 }
 
-module.exports = {
-  PrerenderVueWebpackPlugin,
-  VueSSRServerPlugin,
-};
+module.exports = PrerenderVueWebpackPlugin;

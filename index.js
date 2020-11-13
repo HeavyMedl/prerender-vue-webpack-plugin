@@ -1,9 +1,3 @@
-const {
-  PrerenderVueWebpackPlugin,
-  VueSSRServerPlugin,
-} = require('./src/PrerenderVueWebpackPlugin');
+const PrerenderVueWebpackPlugin = require('./src/PrerenderVueWebpackPlugin');
 
-module.exports = {
-  PrerenderVueWebpackPlugin,
-  VueSSRServerPlugin,
-};
+module.exports = PrerenderVueWebpackPlugin;
