@@ -8,4 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Removed `vue-server-renderer` as a direct dependency of the plugin as clients versions of `vue-loader`/`vue-template-compiler` may cause build conflicts. The package is now defined as a peer depedency.
+- Removed `vue-server-renderer` as a direct dependency of the plugin as clients versions of `vue-loader`/`vue-template-compiler` may cause build conflicts. The package is now defined as a peer dependency.  `PrerenderVueWebpackPlugin` is now a default export.
+
+```javascript
+const PrerenderVueWebpackPlugin = require('prerender-vue-webpack-plugin');
+```
