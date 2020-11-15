@@ -133,6 +133,8 @@ Perhaps our external stylesheets live on a server. Here is an example of incorpo
 ```javascript
 const phin = require('phin');
 const https = require('https');
+const path = require('path');
+const fsPromises = require('fs').promises;
 
 /**
  * Brings in a custom Webpack manifest to pull the URLs of the external
@@ -146,13 +148,13 @@ const https = require('https');
  */
 async function addExternalStylesheets(compiler, compilation) {
   const { externals = {} } = config;
-  const manifest = JSON.parse(
-    compilation.assets['manifest.json'].source(),
-  );
+  const customManifest = JSON.parse(await fsPromises.readFile(
+    path.resolve(compiler.options.output.path, 'manifest.json')
+  ));
   return Promise.all(
     Object.keys(externals).map(async (externalKey) => {
-      const cssUrl = Object.values(manifest[externalKey]).find(
-        (asset) => /\.css(\?[^.]+)?$/.test(asset),
+      const cssUrl = Object.values(customManifest[externalKey]).find(
+        asset => /\.css(\?[^.]+)?$/.test(asset)
       ) || '';
       try {
         const { body } = await phin({
@@ -177,7 +179,7 @@ async function addExternalStylesheets(compiler, compilation) {
       } catch (error) {
         console.log(error);
       }
-    }),
+    })
   );
 }
 ```

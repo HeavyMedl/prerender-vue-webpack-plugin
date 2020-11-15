@@ -1,5 +1,7 @@
 const https = require('https');
 const phin = require('phin');
+const path = require('path');
+const fsPromises = require('fs').promises;
 const {
   PrerenderVueWebpackPlugin,
 } = require('../index');
@@ -17,12 +19,12 @@ const config = require('./config.json');
  */
 async function addExternalStylesheets(compiler, compilation) {
   const { externals = {} } = config;
-  const manifest = JSON.parse(
-    compilation.assets['manifest.json'].source(),
-  );
+  const customManifest = JSON.parse(await fsPromises.readFile(
+    path.resolve(compiler.options.output.path, 'manifest.json'),
+  ));
   return Promise.all(
     Object.keys(externals).map(async (externalKey) => {
-      const cssUrl = Object.values(manifest[externalKey]).find(
+      const cssUrl = Object.values(customManifest[externalKey]).find(
         (asset) => /\.css(\?[^.]+)?$/.test(asset),
       ) || '';
       try {

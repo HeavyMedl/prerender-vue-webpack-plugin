@@ -70,6 +70,7 @@ class PrerenderVueWebpackPlugin {
     // Private
     this.cssMap = {};
     this.pluginExecutionCount = 0;
+    this.emittedAsset = undefined;
     this.entryPoints = [];
     this.logger = log({
       name: `[${PLUGIN_NAME}]`,
@@ -92,6 +93,8 @@ class PrerenderVueWebpackPlugin {
         try {
           this.compilerOutput = compiler.options.output.path;
           this.entryPoints.push(this.getBundleEntrypoint(compilation));
+          this.emittedAsset = this.emittedAsset
+            || this.getEmittedAssetFromChunkName(compilation);
           this.storeCSS(compilation);
           if (
             // Ensures server bundle file is available for Vue app rendering
@@ -101,9 +104,9 @@ class PrerenderVueWebpackPlugin {
             // {@link apply} is called when VueSSRServerPlugin emits the
             // server bundle file and when the application assets are
             // emitted. The emitted app assets contain the CSS we need for
-            // inlining and are stored via {@link storeCSS}. This check ensures
-            // that store happened for inlining.
-            && (this.inlineCSS ? this.entryPoints.length > 1 : true)
+            // inlining and are stored via {@link storeCSS}. The presense of
+            // the emittedAsset signifies that we have our css assets.
+            && (this.inlineCSS ? this.emittedAsset : true)
           ) {
             this.pluginExecutionCount += 1;
             if (this.hook) {
@@ -408,7 +411,7 @@ class PrerenderVueWebpackPlugin {
     const assetName = (assetsByChunkName[this.entry] || []).find(
       (chunkName) => PrerenderVueWebpackPlugin.isJS(chunkName),
     );
-    return assetName || '';
+    return assetName;
   }
 
   /**
