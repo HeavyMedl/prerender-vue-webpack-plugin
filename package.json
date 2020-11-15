@@ -1,6 +1,6 @@
 {
   "name": "prerender-vue-webpack-plugin",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A webpack plugin that allows you to pre-render your Vue applications and optionally inline critical CSS at build time without a headless browser",
   "main": "index.js",
   "scripts": {
