@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2020-11-20
+
+### Fixed
+
+- Now passing `serverBundle` when instantiating a bundle renderer rather than the raw bundle source. This ensures that dependent bundles of the Vue app are properly referenced and can be rendered. Associating `serverBundle.entry` with `{@link this.entry}` in the case where we have multiple Vue applications.
+
+### Changed
+
+- On any exception in the `apply` webpack hook, we write the contents of `{@link this.template}` to the output path. This helps downstream processes that may rely on some form of output existing.
+
+### Added
+
+- Using `mkdirp` to attempt to recursively create the directory passed as an option to the plugin instance (`this.outputPath`). This helps guarantee that the directoy exists before attempting to write there.
+
 ## [2.0.2] - 2020-11-14
 
 ### Changed

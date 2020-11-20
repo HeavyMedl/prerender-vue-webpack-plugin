@@ -1,5 +1,6 @@
 const fsPromises = require('fs').promises;
 const path = require('path');
+const mkdirp = require('mkdirp');
 const { createBundleRenderer } = require('vue-server-renderer');
 const cheerio = require('cheerio');
 const Critters = require('critters-webpack-plugin');
@@ -125,6 +126,9 @@ class PrerenderVueWebpackPlugin {
           }
         } catch (error) {
           this.logger.error(error);
+          this.logger.warn(`[${this.entry}] - An exception occured. Writing to output anyway.`);
+          // Always try to output something on error.
+          await this.writeToOutput(await this.getTemplate());
         }
         callback();
       },
@@ -181,36 +185,45 @@ class PrerenderVueWebpackPlugin {
   }
 
   /**
-   * Fetches the bundle renderer using the {@link bundleSrc} derived from
+   * Creates the bundle renderer using the server bundle derived from
    * {@link this.serverBundleFileName}.
-   *
-   * @param   {String}  bundleSrc  The source of the bundle
    *
    * @return  {Object}             Bundle renderer
    */
-  static async getBundleRenderer(bundleSrc) {
-    return createBundleRenderer(bundleSrc, {
+  async getBundleRenderer() {
+    const serverBundle = await this.getServerBundle();
+    return createBundleRenderer(serverBundle, {
       runInNewContext: false, // <- true borks the render
     });
   }
 
   /**
-   * Writes transformed html to path specified.
+   * Writes html to path specified.
    *
    * @param   {String}  html  The transformed html
    *
    * @return  {void}
    */
   async writeToOutput(html) {
-    const outputPath = this.overwrite
-      ? this.template
-      : `${this.outputPath || this.compilerOutput}/${
-        this.outputFileName || this.entry
-      }.html`;
-    this.logger.info(
-      `[${this.entry}] - Writing transformed html to [${outputPath}]`,
-    );
-    await fsPromises.writeFile(path.resolve(outputPath), html);
+    try {
+      const outputDir = this.outputPath || this.compilerOutput;
+      const outputFileName = this.outputFileName
+        ? this.outputFileName
+        : `${this.entry}.html`;
+      // Attempt to create the output dir if it doesn't exist
+      if (!this.overwrite) {
+        await mkdirp(path.resolve(outputDir));
+      }
+      const output = this.overwrite
+        ? this.template
+        : `${outputDir}/${outputFileName}`;
+      this.logger.info(
+        `[${this.entry}] - Writing HTML to [${output}]`,
+      );
+      await fsPromises.writeFile(path.resolve(output), html);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   /**
@@ -267,10 +280,7 @@ class PrerenderVueWebpackPlugin {
     this.logger.info(
       `[${this.entry}] - Rendering Vue app and injecting into template`,
     );
-    const { files: bundlesObj } = await this.getServerBundle();
-    const bundleRenderer = await PrerenderVueWebpackPlugin.getBundleRenderer(
-      this.getBundleSrc(bundlesObj),
-    );
+    const bundleRenderer = await this.getBundleRenderer();
     const renderedVueApp = await bundleRenderer.renderToString(
       this.templateContext,
     );
@@ -300,12 +310,18 @@ class PrerenderVueWebpackPlugin {
    */
   async getServerBundle() {
     if (!this.serverBundle) {
-      this.serverBundle = JSON.parse(
+      const serverBundle = JSON.parse(
         await fsPromises.readFile(
           path.resolve(this.compilerOutput, this.serverBundleFileName),
           'utf8',
         ),
       );
+      // Override the serverBundle entry. This is for the case where we have
+      // multiple Vue applications and we need to point to the right entrypoint
+      // for the bundle renderer.
+      const entryPoint = this.getEntryPointFromServerBundle(serverBundle);
+      serverBundle.entry = entryPoint;
+      this.serverBundle = serverBundle;
     }
     return this.serverBundle;
   }
@@ -449,6 +465,23 @@ class PrerenderVueWebpackPlugin {
       (entry) => Object.prototype.hasOwnProperty.call(fileSrcObj, entry),
     );
     return fileSrcObj[entryPoint];
+  }
+
+  /**
+   * Attempts to find the bundle entry point from the serverBundle file from
+   * the list of entrypoints associated with {@link this.entry}.
+   *
+   * @param   {Object}  serverBundle  {@link this.serverBundleFileName}
+   *
+   * @return  {String}                The entry point for the bundle from
+   *  the serverBundle file.
+   */
+  getEntryPointFromServerBundle(serverBundle) {
+    const { files } = serverBundle;
+    const entryPoint = this.entryPoints.find(
+      (entry) => Object.prototype.hasOwnProperty.call(files, entry),
+    );
+    return entryPoint;
   }
 
   /**
